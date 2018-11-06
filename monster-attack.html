@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.6.0/css/bulma.min.css">
+    <style>
+        .box {
+            background-color: antiquewhite;
+        }
+        h1 {
+            font-size: 40px;
+            text-align: center;
+        }
+        .menu {
+            background-color: whitesmoke;
+            position: relative;
+            /* height: 60px; */
+        }
+        .stats {
+            background-color: whitesmoke;
+            position: relative;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <div class="container">
+            <div class="box">
+                <div class="columns">
+                    <div class="column is-one-quarter is-offset-one-quarter">
+                        <h1><span>Player</span></h1><br>
+                        <div class="box" style="background-color:tomato">
+                            <p style="text-align: center; color: white">{{playerHealth}}</p>
+                        </div>
+                    </div>
+                    <div class="column is-one-quarter ">
+                        <h1><span>Monster</span></h1><br>
+                        <div class="box" style="background-color:springgreen">
+                            <p style="text-align: center; color: white">{{monsterHealth}}</p>
+                        </div>
+                    </div>
+                </div>
+               
+                <div class="columns">
+                     <div class="column is-half is-offset-one-quarter">
+                        <div class="box menu">
+                            <button @click="flipGameStatus" class="button is-primary is-fullwidth" v-if="gameFlag">
+                                Start Game
+                            </button>
+                            <template v-else style="justify-items: center;">
+                                <button @click="attack" class="button is-primary">ATTACK</button>
+                                <button @click="specialAttack" class="button is-primary">SPECIAL ATTACK</button>
+                                <button @click="heal" class="button is-primary">HEAL</button>
+                                <button @click="flipGameStatus" class="button is-danger">END GAME</button>
+                            </template>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="columns">
+                    <div class="column is-half is-offset-one-quarter">
+                        <template v-if="!gameFlag">
+                            <div class="box stats">
+                                <h2><span>STATS</span></h2>
+                                <ul v-for="stat in stats">
+                                    <li style="text-align: center">{{stat}}</li>
+                                </ul>
+                            </div>
+                        </template>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.5.17/dist/vue.js"></script>
+    <script>
+        new Vue({
+            el: '#app',
+            data: {
+                monsterHealth: 100,
+                playerHealth: 100,
+                gameFlag: true,
+                stats: []
+            },
+            methods: {
+                flipGameStatus: function() {
+                    this.gameFlag = !this.gameFlag; 
+                    this.monsterHealth = 100;
+                    this.playerHealth = 100;
+                    stats = []; 
+                },
+                attack: function() {
+                    if (this.monsterHealth <= 100 && this.monsterHealth >= 0)
+                        this.monsterHealth -= Math.floor((Math.random() * 15) + 1);
+
+                    if (this.playerHealth <= 100 && this.playerHealth >= 0)
+                        this.playerHealth -= Math.floor((Math.random() * 15) + 1);
+
+                    this.addStats('DECREASED');
+                },
+                heal: function() {
+                    if (this.monsterHealth <= 100 && this.monsterHealth >= 0)
+                        this.monsterHealth += Math.floor((Math.random() * 15) + 1);
+
+                    if(this.playerHealth <= 100 && this.playerHealth >= 0)
+                        this.playerHealth += Math.floor((Math.random() * 15) + 1);
+                    
+                        this.addStats('INCREASED');
+                },
+                specialAttack: function() {
+                    if (this.monsterHealth <= 100 && this.monsterHealth >= 0) 
+                        this.monsterHealth -= Math.floor((Math.random() * 30) + 15);
+
+                    if (this.playerHealth <= 100 && this.playerHealth >= 0)
+                        this.playerHealth -= Math.floor((Math.random() * 30) + 15);
+
+                    this.addStats('DECREASED');
+                },
+                addStats: function(keyword) {
+
+                    if (this.monsterHealth > 0 && this.monsterHealth < 100)
+                        this.stats.push(`MONSTER HEALTH ${keyword} TO ${this.playerHealth}`);
+                    
+                    if (this.playerHealth > 0 && this.playerHealth < 100)
+                        this.stats.push(`PLAYER HEALTH ${keyword} TO ${this.playerHealth}`);
+                },
+            },
+            watch: {
+                monsterHealth: function() {
+                    if (this.playerHealth <= 0) {
+                        alert(`monster has won the game!!!`);
+                        this.flipGameStatus();
+                    } 
+                }, 
+                playerHealth: function() {
+                    if (this.monsterHealth <= 0) {
+                        alert(`player has won the game!!!`);
+                        this.flipGameStatus();
+                    } 
+                }
+            }
+        });
+    </script>
+</body>
+</html>
